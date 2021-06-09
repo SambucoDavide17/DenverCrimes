@@ -85,22 +85,11 @@ public class Model {
 			}
 		}
 		
-		for(DefaultWeightedEdge e: this.grafo.edgesOf(ultimo)) {
-			if(ultimo.equals(grafo.getEdgeTarget(e))) {
-				String prossimo = grafo.getEdgeTarget(e);
-				if(!parziale.contains(prossimo)) {
-					parziale.add(prossimo);
-					cerca(parziale, arrivo);
-					parziale.remove(parziale.size()-1) ;
-				}
-			}
-			if(ultimo.equals(grafo.getEdgeSource(e))) {
-				String prossimo = grafo.getEdgeSource(e);
-				if(!parziale.contains(prossimo)) {
-					parziale.add(prossimo);
-					cerca(parziale, arrivo);
-					parziale.remove(parziale.size()-1) ;
-				}
+		for(String s: Graphs.neighborListOf(grafo, ultimo)) {
+			if(!parziale.contains(s)) {
+				parziale.add(s);
+				cerca(parziale, arrivo);
+				parziale.remove(parziale.size()-1) ;
 			}
 		}
 	}
