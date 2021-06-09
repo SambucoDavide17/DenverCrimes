@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import it.polito.tdp.crimes.model.Adiacenza;
 import it.polito.tdp.crimes.model.Event;
 
 
@@ -47,6 +49,88 @@ public class EventsDao {
 			conn.close();
 			return list ;
 
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null ;
+		}
+	}
+	
+	public List<String> getCategorie(){
+		String sql = "Select Distinct offense_category_id as cat From events";
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			
+			List<String> risultato = new ArrayList<>() ;
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				risultato.add(res.getString("cat"));
+			}
+			conn.close();
+			return risultato ;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null ;
+		}
+		
+	}
+	
+	public List<String> getVertici(String categoria, int mese){
+		String sql = "Select Distinct offense_type_id as type "
+				+ "From events "
+				+ "Where offense_category_id = ? and Month(reported_date) = ? ";
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			st.setString(1, categoria);
+			st.setInt(2, mese);
+			
+			List<String> risultato = new ArrayList<>() ;
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				risultato.add(res.getString("type"));
+			}
+			conn.close();
+			return risultato ;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null ;
+		}
+	}
+	
+	public List<Adiacenza> getArchi (String categoria, int mese){
+		String sql = "Select Distinct e1.offense_type_id as t1, e2.offense_type_id as t2, count(Distinct e1.neighborhood_id) as peso "
+				+ "From events e1, events e2 "
+				+ "Where e1.offense_category_id = ? and Month(e1.reported_date) = ? and Month(e2.reported_date) = ? and e1.offense_category_id = e2.offense_category_id and e1.offense_type_id < e2.offense_type_id and e1.neighborhood_id < e2.neighborhood_id "
+				+ "Group by e1.offense_type_id, e2.offense_type_id ";
+		try {
+			Connection conn = DBConnect.getConnection() ;
+
+			PreparedStatement st = conn.prepareStatement(sql) ;
+			st.setString(1, categoria);
+			st.setInt(2, mese);
+			st.setInt(3, mese);
+			
+			List<Adiacenza> risultato = new ArrayList<>() ;
+			
+			ResultSet res = st.executeQuery() ;
+			
+			while(res.next()) {
+				Adiacenza nuova = new Adiacenza(res.getString("t1"), res.getString("t2"), res.getInt("peso"));
+				risultato.add(nuova);
+			}
+			conn.close();
+			return risultato ;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
