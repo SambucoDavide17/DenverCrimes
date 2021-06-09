@@ -59,21 +59,21 @@ public class Model {
 		return sopraMedia;
 	}
 	
-	public List<String> percorsoMigliore(Adiacenza partenzaEArrivo){
+	public List<String> percorsoMigliore(String partenza, String arrivo){
 		percorsoBest = null;
 		
 		List<String> parziale = new ArrayList<>();
-		parziale.add(partenzaEArrivo.getC1());
+		parziale.add(partenza);
 		
-		cerca(parziale, partenzaEArrivo);
+		cerca(parziale, arrivo);
 		
 		return percorsoBest;
 	}
 	
-	public void cerca(List<String> parziale, Adiacenza partenzaEArrivo) {
+	public void cerca(List<String> parziale, String arrivo) {
 		
 		String ultimo = parziale.get(parziale.size()-1);
-		if(partenzaEArrivo.getC2().equals(ultimo)) {
+		if(arrivo.equals(ultimo)) {
 			if(percorsoBest == null) {
 				percorsoBest = new ArrayList<>(parziale);
 				return;
@@ -90,7 +90,7 @@ public class Model {
 				String prossimo = grafo.getEdgeTarget(e);
 				if(!parziale.contains(prossimo)) {
 					parziale.add(prossimo);
-					cerca(parziale, partenzaEArrivo);
+					cerca(parziale, arrivo);
 					parziale.remove(parziale.size()-1) ;
 				}
 			}
@@ -98,7 +98,7 @@ public class Model {
 				String prossimo = grafo.getEdgeSource(e);
 				if(!parziale.contains(prossimo)) {
 					parziale.add(prossimo);
-					cerca(parziale, partenzaEArrivo);
+					cerca(parziale, arrivo);
 					parziale.remove(parziale.size()-1) ;
 				}
 			}

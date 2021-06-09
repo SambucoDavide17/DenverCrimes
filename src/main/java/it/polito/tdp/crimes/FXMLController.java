@@ -54,7 +54,7 @@ public class FXMLController {
     		return;
     	}
     	txtResult.appendText("Percorso di archi più lungo:\n");
-    	for(String s: model.percorsoMigliore(arco)) {
+    	for(String s: model.percorsoMigliore(arco.getC1(), arco.getC2())) {
     		txtResult.appendText(s + "\n");
     	}
 
