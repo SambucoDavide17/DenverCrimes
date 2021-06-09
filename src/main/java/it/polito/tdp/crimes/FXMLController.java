@@ -47,12 +47,23 @@ public class FXMLController {
 
     @FXML
     void doCalcolaPercorso(ActionEvent event) {
+    	txtResult.clear();
+    	Adiacenza arco = boxArco.getValue();
+    	if(arco == null) {
+    		txtResult.appendText("Selezionare un arco!\n");
+    		return;
+    	}
+    	txtResult.appendText("Percorso di archi più lungo:\n");
+    	for(String s: model.percorsoMigliore(arco)) {
+    		txtResult.appendText(s + "\n");
+    	}
 
     }
 
     @FXML
     void doCreaGrafo(ActionEvent event) {
     	String categoria = boxCategoria.getValue();
+    	boxArco.getItems().clear();
     	if(categoria == null) {
     		txtResult.appendText("Selezionare una categoria!\n");
     		return;
@@ -64,6 +75,10 @@ public class FXMLController {
     	}
     	txtResult.clear();
     	model.creaGrafo(categoria, mese);
+    	if(model.getVertici() == null) {
+    		txtResult.appendText("Nessun risultato trovato con questa combinazione di categoria e mese!\n");
+    		return;
+    	}
     	txtResult.appendText("Archi con peso più alto della media:\n");
     	for(Adiacenza a: model.getSopraMedia()){
     		txtResult.appendText(a.toString() + "\n");

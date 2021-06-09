@@ -15,6 +15,8 @@ public class Model {
 	
 	private Graph<String, DefaultWeightedEdge> grafo ;
 	private EventsDao dao;
+	private List<String> percorsoBest;
+	private List<String> vertici;
 	
 	public Model() {
 		dao = new EventsDao();
@@ -22,13 +24,18 @@ public class Model {
 	
 	public void creaGrafo(String categoria, int mese) {
 		grafo = new SimpleWeightedGraph<>(DefaultWeightedEdge.class);
-		Graphs.addAllVertices(grafo, dao.getVertici(categoria, mese));
+		vertici = new ArrayList<>(dao.getVertici(categoria, mese));
+		Graphs.addAllVertices(grafo, vertici);
 		
 		for(Adiacenza a: dao.getArchi(categoria, mese)) {
 			if(grafo.getEdge(a.getC1(), a.getC2()) == null) {
 				Graphs.addEdge(grafo, a.getC1(), a.getC2(), a.getPeso());
 			}
 		}
+	}
+	
+	public List<String> getVertici() {
+		return vertici;
 	}
 	
 	public List<String> getCategorie(){
@@ -50,5 +57,51 @@ public class Model {
 			}
 		}
 		return sopraMedia;
+	}
+	
+	public List<String> percorsoMigliore(Adiacenza partenzaEArrivo){
+		percorsoBest = null;
+		
+		List<String> parziale = new ArrayList<>();
+		parziale.add(partenzaEArrivo.getC1());
+		
+		cerca(parziale, partenzaEArrivo);
+		
+		return percorsoBest;
+	}
+	
+	public void cerca(List<String> parziale, Adiacenza partenzaEArrivo) {
+		
+		String ultimo = parziale.get(parziale.size()-1);
+		if(partenzaEArrivo.getC2().equals(ultimo)) {
+			if(percorsoBest == null) {
+				percorsoBest = new ArrayList<>(parziale);
+				return;
+			} else if( parziale.size() > this.percorsoBest.size() ) {
+				percorsoBest = new ArrayList<>(parziale) ;
+				return;
+			} else {
+				return;
+			}
+		}
+		
+		for(DefaultWeightedEdge e: this.grafo.edgesOf(ultimo)) {
+			if(ultimo.equals(grafo.getEdgeTarget(e))) {
+				String prossimo = grafo.getEdgeTarget(e);
+				if(!parziale.contains(prossimo)) {
+					parziale.add(prossimo);
+					cerca(parziale, partenzaEArrivo);
+					parziale.remove(parziale.size()-1) ;
+				}
+			}
+			if(ultimo.equals(grafo.getEdgeSource(e))) {
+				String prossimo = grafo.getEdgeSource(e);
+				if(!parziale.contains(prossimo)) {
+					parziale.add(prossimo);
+					cerca(parziale, partenzaEArrivo);
+					parziale.remove(parziale.size()-1) ;
+				}
+			}
+		}
 	}
 }
