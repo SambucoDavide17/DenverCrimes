@@ -109,9 +109,9 @@ public class EventsDao {
 	}
 	
 	public List<Adiacenza> getArchi (String categoria, int mese){
-		String sql = "Select Distinct e1.offense_type_id as t1, e2.offense_type_id as t2, count(Distinct e1.neighborhood_id) as peso "
+		String sql = "Select e1.offense_type_id as t1, e2.offense_type_id as t2, count(Distinct e1.neighborhood_id) as peso "
 				+ "From events e1, events e2 "
-				+ "Where e1.offense_category_id = ? and Month(e1.reported_date) = ? and Month(e2.reported_date) = ? and e1.offense_category_id = e2.offense_category_id and e1.offense_type_id < e2.offense_type_id and e1.neighborhood_id < e2.neighborhood_id "
+				+ "Where e1.offense_category_id = ? and Month(e1.reported_date) = ? and Month(e2.reported_date) = ? and e1.offense_category_id = e2.offense_category_id and e1.offense_type_id < e2.offense_type_id and e1.neighborhood_id = e2.neighborhood_id "
 				+ "Group by e1.offense_type_id, e2.offense_type_id ";
 		try {
 			Connection conn = DBConnect.getConnection() ;
